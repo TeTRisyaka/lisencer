@@ -59,7 +59,6 @@ start = 0
 finish = len(response.json()["rows"])
 licensePool = []
 for item in response.json()["rows"]:
-
     try:
         date = response.json()["rows"][start]["end_time"]
         dt = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -86,9 +85,10 @@ for elem in licensePool:
             #print(license_date)
         except:
             license_date = None
+
         try:
             days_until_license_over = (license_date - now).days
-            if days_until_license_over < 100 and days_until_license_over > 0:
+            if 100 > days_until_license_over > 0:
                 print(f'Дней до окончания лицензии {elem[1]} {days_until_license_over}')
         except:
            None
