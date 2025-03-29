@@ -3,7 +3,7 @@ import requests
 from secrets import login, psw, tokenUrl, url
 
 now = datetime.now().date()
-usrs = 74247, 74598
+usrs = 74247, 150014
 
 data = {
     "login": login,
@@ -67,29 +67,59 @@ for item in response.json()["rows"]:
         formatted_date = "Дата окончания отсутствует"
 
     try:
-        licenseName = response.json()["rows"][start]["data"][0]["licenseData"][0]["type"]
-       # print(formatted_date + " " + licenseName)
-        licensePool.insert(start, [formatted_date, licenseName])
-        if start < finish - 1:
-            start += 1
+        status = response.json()["rows"][start]["status"]
     except:
-      #  print(formatted_date + " Программа")
-        licensePool.insert(start, [formatted_date, "Программа"])
-        if start < finish - 1:
-            start += 1
+        status = None
+
+    try:
+        licenseName = response.json()["rows"][start]["data"][0]["licenseData"][0]["type"]
+        #print(formatted_date + " " + licenseName)
+    except:
+        #  print(formatted_date + " Программа")
+        licenseName = "Программа"
+    licensePool.insert(start, [formatted_date, licenseName, status])
+    if start < finish - 1:
+        start += 1
+
 
 print(licensePool)
+check_list = []
 for elem in licensePool:
-        try:
-            license_date = datetime.strptime(elem[0], "%d-%m-%Y").date()
-            #print(license_date)
-        except:
-            license_date = None
+        if elem[1] == "GESN2022":
+            if elem[2] == "0":
+                check_list.insert(0, 1)
+            if elem[2] == "1":
 
-        try:
-            days_until_license_over = (license_date - now).days
-            if 100 > days_until_license_over > 0:
-                print(f'Дней до окончания лицензии {elem[1]} {days_until_license_over}')
-        except:
-           None
+             print("Лицензия для ГЭСН не требуется")
+        elif elem[1] == "SN2012" and elem[2] == '0':
+             check_list.insert(1, 2)
+             print("Лицензия для СН не требуется")
+        elif elem[1] == "TSN_MGE" and elem[2] == '0':
+             check_list.insert(2, 3)
+             print("Лицензия для ТСН не требуется")
+        elif elem[1] == "Программа" and elem[2] == '0':
+             check_list.insert(3, 4)
+             print("Лицензия для Программы не требуется")
 
+        elif elem[2] == '2':
+                print(f'Лицензия {elem[1]} закончилась')
+
+        elif elem[2] == '1':
+            try:
+                license_date = datetime.strptime(elem[0], "%d-%m-%Y").date()
+            # print(license_date)
+            except:
+                license_date = None
+            try:
+                days_until_license_over = (license_date - now).days
+                if 100 > days_until_license_over > 0:
+                    print(f'Дней до окончания лицензии {elem[1]} {days_until_license_over}')
+                elif days_until_license_over < 1:
+                    print(f'выдаем лицензию для {elem[1]}')
+            except:
+                None
+print(check_list)
+if 1 and 2 and 3 and 4 in check_list:
+    print("Лицензии не требуются")
+else:
+    print("Выдаем лицензии")
