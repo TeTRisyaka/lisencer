@@ -1,9 +1,6 @@
 import requests
 
-from secrets import token_url, login, psw
-
-url = "https://estimate-office-staging.smeta.ru/identity/internal/users/74632"
-identity_url = "https://estimate-office-staging.smeta.ru/identity/token"
+from secrets import token_url, login, psw, identity_url, user_url
 
 token_data = {
     "login": login,
@@ -28,11 +25,20 @@ def get_identity_token():
     return identity_token
 
 
-manager_headers = {
-    "authorization": "Bearer " + get_identity_token(),
+identity_header = {
+    "authorization": "Bearer " + get_identity_token()
 }
 
-newTokenResponse = requests.get(url, headers=manager_headers)
-print(newTokenResponse.json())
+def get_user_data():
+    new_token_response = requests.get(user_url, headers=identity_header)
+    user_data = {
+        "id": new_token_response.json()['cloudId'],
+        "login": new_token_response.json()['userName'],
+        "name": new_token_response.json()['fullName'],
+        "email": new_token_response.json()['email'],
+        "phone": new_token_response.json()['userPhone'],
+        "company": new_token_response.json()['userOrg']
+    }
+    return user_data
 
 

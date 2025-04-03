@@ -1,6 +1,8 @@
 from datetime import datetime
 import requests
-from secrets import login, psw, token_url, url, license_url, usrs
+
+from licene_giver import license_giver
+from secrets import url, usrs
 from user_get_info import get_manager_token
 
 now = datetime.now().date()
@@ -16,7 +18,7 @@ data = {
     "filters": {
         "id": [{"value": None, "matchMode": "equals", "operator": "and"}],
         "id_invoice": [{"value": None, "matchMode": "equals", "operator": "and"}],
-        "id_user": [{"value": usrs[2], "matchMode": "equals", "operator": "and"}],
+        "id_user": [{"value": usrs[3], "matchMode": "equals", "operator": "and"}],
         "type": [{"value": None, "matchMode": "in", "operator": "and"}],
         "access_type": [{"value": None, "matchMode": "in", "operator": "and"}],
         "duration": [{"value": None, "matchMode": "equals", "operator": "and"}],
@@ -61,24 +63,24 @@ for item in response.json()["rows"]:
 license_give = []
 
 
-def license_cheker(licence_name):
-    i = 0
-    while i < len(licensePool):
-        if licensePool[i][1] == licence_name:
-            del licensePool[i]
-                # print(f'удалены лицензии для {licence_name}')
-            i -= 1
-        i += 1
+# def license_cheker(licence_name):
+#     i = 0
+#     while i < len(licensePool):
+#         if licensePool[i][1] == licence_name:
+#             del licensePool[i]
+#                 # print(f'удалены лицензии для {licence_name}')
+#             i -= 1
+#         i += 1
 
 
-def finish_license_remover(license_name):
-    i = 0
-    while i < len(licensePool):
-        if licensePool[i][1] == license_name and licensePool[i][2] == "2":
-            del licensePool[i]
-        # print(f'удалены лицензии для {licence_name}')
-            i -= 1
-        i += 1
+# def finish_license_remover(license_name):
+#     i = 0
+#     while i < len(licensePool):
+#         if licensePool[i][1] == license_name and licensePool[i][2] == "2":
+#             del licensePool[i]
+#         # print(f'удалены лицензии для {licence_name}')
+#             i -= 1
+#         i += 1
 
 
 def date_checker(elem_date, elem_name):
@@ -92,20 +94,18 @@ def date_checker(elem_date, elem_name):
     except:
         days_until_license_over = None
     try:
-        if 100 > days_until_license_over > 0:
             if days_until_license_over <= 2:
                 print(f'выдаем лицензию для {elem_name}')
                 license_give.insert(i, [elem_date, elem_name])
                 i += 1
+                license_giver(elem_name)
             else:
                 print(f'Дней до окончания лицензии {elem_name} {days_until_license_over}')
-        # elif days_until_license_over < 0:
-            #finish_license_remover(elem_name)
-            #print(f'Лицензия {elem_name} закончилась')
     except:
         print("Ошибка функции")
 
-print(licensePool)
+
+#print(licensePool)
 
 i = 0
 while i < len(licensePool):
@@ -147,7 +147,7 @@ while i < len(licensePool):
                 # i -= 1
         i += 1
 
-print(license_give)
+#print(license_give)
 
 
 
