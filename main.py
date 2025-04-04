@@ -49,12 +49,10 @@ def license_pool_create(user_id):
             status = None
 
         try:
-            licenseName = response.json()["rows"][start]["data"][0]["licenseData"][0]["type"]
-            #print(formatted_date + " " + licenseName)
+            license_name = response.json()["rows"][start]["data"][0]["licenseData"][0]["type"]
         except:
-            #  print(formatted_date + " Программа")
-            licenseName = "Программа"
-        license_pool.insert(start, [formatted_date, licenseName, status])
+            license_name = "Программа"
+        license_pool.insert(start, [formatted_date, license_name, status])
         if start < finish - 1:
             start += 1
     return license_pool
@@ -71,17 +69,17 @@ def date_checker(elem_date, elem_name, user_url):
     except:
         days_until_license_over = None
     try:
-            if days_until_license_over <= 2:
-                print(f'выдаем лицензию для {elem_name}')
+            if 0 <= days_until_license_over <= 2:
+                print(f'выдаем лицензию для {elem_name} потому что дней до окончания {days_until_license_over}')
                 license_giver(elem_name,user_url)
-            else:
+            elif 2 <= days_until_license_over <= 100:
                 print(f'Дней до окончания лицензии {elem_name} {days_until_license_over}')
     except:
         print("Ошибка функции")
 
 #Основная функция, которая ходит по лиценз пулу и при активном статусе лицензии вызывает
 # проверку даты, либо игнорит лицензию при статусе 0 или 5
-def license_pooler(user_url, license_pool):
+def license_puller(user_url, license_pool):
         i = 0
         while i < len(license_pool):
             if license_pool[i][1] == "GESN2022":
@@ -115,5 +113,5 @@ for user in usrs:
     user_url = f'{users_url}{user}'
     print(f'обработка id {user}')
     license = license_pool_create(user)
-    license_pooler(user_url, license)
+    license_puller(user_url, license)
 
