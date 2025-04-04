@@ -1,14 +1,14 @@
 import requests
-from secrets import tariff_url
+from sensitivity_data import tariff_url
 from user_get_info import get_manager_token
 
 headers = {
     "authorization": "Bearer " + get_manager_token(),
 }
 
+#Функция достает данные о необходимых тарифах из общего списка
 def get_tariff_name(tariff_name):
     all_tariffs_response = requests.get(tariff_url, headers=headers)
-    # print(all_tariffs_response.json())
     tariff = None
     if tariff_name == 'GESN2022':
         tariff_name = "Только ФСНБ"
