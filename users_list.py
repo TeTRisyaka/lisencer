@@ -6,6 +6,6 @@ usrs = (
     150013
 )
 
-user_for_license_giving = (
-    150040
+users_for_license_giving = (
+    150040,
 )
