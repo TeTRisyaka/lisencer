@@ -87,34 +87,38 @@ def license_puller(user_url, license_pool):
     while i < len(license_pool):
         if license_pool[i][1] == "GESN2022":
             if license_pool[i][2] in ("0","5"):
-                print("Лицензия для ГЭСН не требуется")
                 license_available.insert(i, "ГЭСН")
             elif license_pool[i][2] in ("1","2") and "ГЭСН" not in license_available:
                             #print("Проверяем даты для ГЭСН")
                 date_checker(license_pool[i][0], license_pool[i][1], user_url)
         elif license_pool[i][1] == "SN2012":
             if license_pool[i][2] in ("0","5"):
-                print("Лицензия для СН не требуется")
                 license_available.insert(i, "СН")
             elif license_pool[i][2] in ("1","2") and "СН" not in license_available:
                             #print("Проверяем даты СН")
                 date_checker(license_pool[i][0], license_pool[i][1], user_url)
         elif license_pool[i][1] == "TSN_MGE":
             if license_pool[i][2] in ("0","5"):
-                print("Лицензия для ТСН не требуется")
                 license_available.insert(i, "ТСН")
             elif license_pool[i][2] in ("1","2") and "ТСН" not in license_available:
                             #print("Проверяем даты ТСН")
                 date_checker(license_pool[i][0], license_pool[i][1], user_url)
         elif license_pool[i][1] == "Программа":
             if license_pool[i][2] in ("0","5"):
-                    print("Лицензия для Программы не требуется")
                     license_available.insert(i, "ПРОГРАММА")
             elif license_pool[i][2] in ("1","2") and "ПРОГРАММА" not in license_available:
                             #print("Проверяем даты программа")
                 date_checker(license_pool[i][0], license_pool[i][1], user_url)
         i += 1
-    print(license_available)
+    if "ПРОГРАММА" in license_available:
+        print("Лицензия для Программы не требуется")
+    if "ГЭСН" in license_available:
+        print("Лицензия для ГЭСН не требуется")
+    if "ТСН" in license_available:
+        print("Лицензия для ТСН не требуется")
+    if "СН" in license_available:
+        print("Лицензия для СН не требуется")
+    print(f'Лицензии в статусе "новая" или "ждет оплаты" {license_available}')
 
 
 for user in usrs:
