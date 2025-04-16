@@ -2,8 +2,8 @@ import requests
 from datetime import datetime
 from license_giver import license_giver
 from sensitivity_data import url, users_url
-from user_get_info import get_manager_token
-from users_list import usrs
+from user_get_info import get_manager_token, get_user_id_by_email
+from users_list import users_emails
 
 now = datetime.now().date()
 
@@ -121,9 +121,10 @@ def license_puller(user_url, license_pool):
     print(f'Лицензии в статусе "новая" или "ждет оплаты" {license_available}')
 
 
-for user in usrs:
-    user_url = f'{users_url}{user}'
-    print(f'обработка id {user}')
-    license = license_pool_create(user)
+for user in users_emails:
+    user_id = get_user_id_by_email(users_url, user)
+    user_url = f'{users_url}{user_id}'
+    print(f'обработка пользователя {user} id {user_id}')
+    license = license_pool_create(user_id)
     license_puller(user_url, license)
 

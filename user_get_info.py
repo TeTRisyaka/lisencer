@@ -14,6 +14,8 @@ identity_token_data = {
     "scope": scope
 }
 
+usrs = []
+
 #Функция для получения токена для менеджера
 def get_manager_token():
     token_response = requests.post(token_url, json=token_data)
@@ -44,3 +46,15 @@ def get_user_data(user_url):
     return user_data
 
 
+#Функция для получения id пользователя по email
+def get_user_id_by_email(users_url, user_email):
+    data = {
+        "filters": {
+            "email": [{"value": user_email, "matchMode": "startsWith", "operator": "and"}]
+            }}
+    try:
+        new_token_response = requests.post(users_url, headers=identity_header, json=data)
+        user_id = new_token_response.json()['items'][0]['cloudId']
+    except:
+        print(f'Id пользователя {user_email} не найден')
+    return user_id

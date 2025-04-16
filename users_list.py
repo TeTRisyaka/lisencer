@@ -1,11 +1,10 @@
-usrs = (
-    74247,
-    150014,
-    74598,
-    150039,
-    150013
+users_emails = (
+    'tetriskamana@gmail.com',
+    'tetriskamana1@gmail.com',
+    'tetriskamana2@gmail.com',
+    'tetriskamana3@gmail.com'
 )
 
 users_for_license_giving = (
-    150040,
+    'tetriskamana3@gmail.com',
 )
