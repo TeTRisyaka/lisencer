@@ -2,12 +2,7 @@ import requests
 import logging
 
 # Настройка логирования
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 
 from sensitivity_data import login, psw, username, password, grant_type, scope
 from url_manager import token_url, identity_url

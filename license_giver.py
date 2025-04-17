@@ -6,12 +6,7 @@ from url_manager import license_url
 from user_get_info import get_user_data, get_manager_token
 
 # Настройка логирования
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 
 now = datetime.now()
 formated_time = datetime.strftime(now, "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -28,5 +23,8 @@ def license_giver(tariff_name, user_url):
         "activate_time": formated_time,
         "user": get_user_data(user_url)
     }
-    requests.post(license_url, headers=headers, json=data)
-    logger.info(f"Лицензия для {tariff_name} выдана")
+    give_license = requests.post(license_url, headers=headers, json=data)
+    if give_license.status_code == 400:
+        logger.warning(f"Лицензия для {tariff_name} не выдана")
+    else:
+        logger.info(f"Лицензия для {tariff_name} выдана")

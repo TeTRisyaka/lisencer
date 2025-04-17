@@ -1,18 +1,13 @@
 import requests
 from datetime import datetime
 from license_giver import license_giver
-from sensitivity_data import url, users_url
+from url_manager import user_licenses_url, users_url
 from user_get_info import get_manager_token, get_user_id_by_email
 from users_list import users_emails
 import logging
 
 # Настройка логирования
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 
 now = datetime.now().date()
 
@@ -27,22 +22,11 @@ def license_pool_create(user_id):
         "rows": 15,
         "sortOrder": 1,
         "filters": {
-            "id": [{"value": None, "matchMode": "equals", "operator": "and"}],
-            "id_invoice": [{"value": None, "matchMode": "equals", "operator": "and"}],
             "id_user": [{"value": user_id, "matchMode": "equals", "operator": "and"}],
-            "type": [{"value": None, "matchMode": "in", "operator": "and"}],
-            "access_type": [{"value": None, "matchMode": "in", "operator": "and"}],
-            "duration": [{"value": None, "matchMode": "equals", "operator": "and"}],
-            "create_time": [{"value": None, "matchMode": "dateIs", "operator": "and"}],
-            "start_time": [{"value": None, "matchMode": "dateIs", "operator": "and"}],
-            "end_time": [{"value": None, "matchMode": "dateIs", "operator": "and"}],
-            "create_method": [{"value": None, "matchMode": "in", "operator": "and"}],
-            "status": [{"value": None, "matchMode": "in", "operator": "and"}]
-        },
-        "globalFilter": None
+        }
     }
 
-    response = requests.post(url, headers=headers, json=data)
+    response = requests.post(user_licenses_url, headers=headers, json=data)
     start = 0
     finish = len(response.json()["rows"])
     license_pool = []
