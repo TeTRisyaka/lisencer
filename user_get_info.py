@@ -1,5 +1,13 @@
 import requests
+import logging
 
+# Настройка логирования
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+logger = logging.getLogger(__name__)
 
 from sensitivity_data import token_url, login, psw, identity_url, username, password, grant_type, scope
 
@@ -56,5 +64,5 @@ def get_user_id_by_email(users_url, user_email):
         new_token_response = requests.post(users_url, headers=identity_header, json=data)
         user_id = new_token_response.json()['items'][0]['cloudId']
     except:
-        print(f'Id пользователя {user_email} не найден')
+        logger.error(f'Id пользователя {user_email} не найден')
     return user_id
