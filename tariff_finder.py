@@ -1,6 +1,11 @@
 import requests
-from sensitivity_data import tariff_url
+import logging
+from url_manager import tariff_url
 from user_get_info import get_manager_token
+
+# Настройка логирования
+logger = logging.getLogger()
+
 
 headers = {
     "authorization": "Bearer " + get_manager_token(),
@@ -21,5 +26,8 @@ def get_tariff_name(tariff_name):
     for i in all_tariffs_response.json():
         if i["name"] == tariff_name:
             tariff = i
+            logger.info(f"Тариф найден: {tariff_name}")
+    if tariff is None:
+        logger.warning(f"Тариф не найден: {tariff_name}")
     return tariff
 

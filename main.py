@@ -1,9 +1,13 @@
 import requests
 from datetime import datetime
 from license_giver import license_giver
-from sensitivity_data import url, users_url
+from url_manager import user_licenses_url, users_url
 from user_get_info import get_manager_token, get_user_id_by_email
 from users_list import users_emails
+import logging
+
+# Настройка логирования
+logger = logging.getLogger()
 
 now = datetime.now().date()
 
@@ -18,22 +22,11 @@ def license_pool_create(user_id):
         "rows": 15,
         "sortOrder": 1,
         "filters": {
-            "id": [{"value": None, "matchMode": "equals", "operator": "and"}],
-            "id_invoice": [{"value": None, "matchMode": "equals", "operator": "and"}],
             "id_user": [{"value": user_id, "matchMode": "equals", "operator": "and"}],
-            "type": [{"value": None, "matchMode": "in", "operator": "and"}],
-            "access_type": [{"value": None, "matchMode": "in", "operator": "and"}],
-            "duration": [{"value": None, "matchMode": "equals", "operator": "and"}],
-            "create_time": [{"value": None, "matchMode": "dateIs", "operator": "and"}],
-            "start_time": [{"value": None, "matchMode": "dateIs", "operator": "and"}],
-            "end_time": [{"value": None, "matchMode": "dateIs", "operator": "and"}],
-            "create_method": [{"value": None, "matchMode": "in", "operator": "and"}],
-            "status": [{"value": None, "matchMode": "in", "operator": "and"}]
-        },
-        "globalFilter": None
+        }
     }
 
-    response = requests.post(url, headers=headers, json=data)
+    response = requests.post(user_licenses_url, headers=headers, json=data)
     start = 0
     finish = len(response.json()["rows"])
     license_pool = []
@@ -61,7 +54,6 @@ def license_pool_create(user_id):
 
 #Смотрим сколько дней осталось до конца лицензии (при возможности)
 def date_checker(elem_date, elem_name, user_url):
-    # i = 0
     try:
         license_date = datetime.strptime(elem_date, "%d-%m-%Y").date()
     except:
@@ -71,13 +63,13 @@ def date_checker(elem_date, elem_name, user_url):
     except:
         days_until_license_over = None
     try:
-            if 0 <= days_until_license_over <= 2:
-                print(f'выдаем лицензию для {elem_name} потому что дней до окончания {days_until_license_over}')
-                license_giver(elem_name,user_url)
-            elif 2 <= days_until_license_over <= 100:
-                print(f'Дней до окончания лицензии {elem_name} {days_until_license_over}')
+        if 0 <= days_until_license_over <= 2:
+            logger.info(f'выдаем лицензию для {elem_name} потому что дней до окончания {days_until_license_over}')
+            license_giver(elem_name,user_url)
+        elif 2 <= days_until_license_over <= 100:
+            logger.info(f'Дней до окончания лицензии {elem_name} {days_until_license_over}')
     except:
-        print("Ошибка функции")
+        logger.error("Ошибка функции проверки даты")
 
 #Основная функция, которая ходит по лиценз пулу и при активном статусе лицензии вызывает
 # проверку даты, либо игнорит лицензию при статусе 0 или 5
@@ -89,42 +81,38 @@ def license_puller(user_url, license_pool):
             if license_pool[i][2] in ("0","5"):
                 license_available.insert(i, "ГЭСН")
             elif license_pool[i][2] in ("1","2") and "ГЭСН" not in license_available:
-                            #print("Проверяем даты для ГЭСН")
                 date_checker(license_pool[i][0], license_pool[i][1], user_url)
         elif license_pool[i][1] == "SN2012":
             if license_pool[i][2] in ("0","5"):
                 license_available.insert(i, "СН")
             elif license_pool[i][2] in ("1","2") and "СН" not in license_available:
-                            #print("Проверяем даты СН")
                 date_checker(license_pool[i][0], license_pool[i][1], user_url)
         elif license_pool[i][1] == "TSN_MGE":
             if license_pool[i][2] in ("0","5"):
                 license_available.insert(i, "ТСН")
             elif license_pool[i][2] in ("1","2") and "ТСН" not in license_available:
-                            #print("Проверяем даты ТСН")
                 date_checker(license_pool[i][0], license_pool[i][1], user_url)
         elif license_pool[i][1] == "Программа":
             if license_pool[i][2] in ("0","5"):
                     license_available.insert(i, "ПРОГРАММА")
             elif license_pool[i][2] in ("1","2") and "ПРОГРАММА" not in license_available:
-                            #print("Проверяем даты программа")
                 date_checker(license_pool[i][0], license_pool[i][1], user_url)
         i += 1
     if "ПРОГРАММА" in license_available:
-        print("Лицензия для Программы не требуется")
+        logger.info("Лицензия для Программы не требуется")
     if "ГЭСН" in license_available:
-        print("Лицензия для ГЭСН не требуется")
+        logger.info("Лицензия для ГЭСН не требуется")
     if "ТСН" in license_available:
-        print("Лицензия для ТСН не требуется")
+        logger.info("Лицензия для ТСН не требуется")
     if "СН" in license_available:
-        print("Лицензия для СН не требуется")
-    print(f'Лицензии в статусе "новая" или "ждет оплаты" {license_available}')
+        logger.info("Лицензия для СН не требуется")
+    logger.info(f'Лицензии в статусе "новая" или "ждет оплаты" {license_available}')
 
 
 for user in users_emails:
     user_id = get_user_id_by_email(users_url, user)
     user_url = f'{users_url}{user_id}'
-    print(f'обработка пользователя {user} id {user_id}')
+    logger.info(f'обработка пользователя {user} id {user_id}')
     license = license_pool_create(user_id)
     license_puller(user_url, license)
 
