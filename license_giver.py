@@ -2,7 +2,7 @@ import requests
 import logging
 from datetime import datetime
 from tariff_finder import get_tariff_name
-from sensitivity_data import license_url
+from url_manager import license_url
 from user_get_info import get_user_data, get_manager_token
 
 # Настройка логирования

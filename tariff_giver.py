@@ -1,7 +1,7 @@
 import logging
 from license_giver import license_giver
 from main import user
-from sensitivity_data import users_url
+from url_manager import users_url
 from user_get_info import get_user_id_by_email
 from users_list import users_emails, users_for_license_giving
 

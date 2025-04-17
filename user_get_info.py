@@ -9,7 +9,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-from sensitivity_data import token_url, login, psw, identity_url, username, password, grant_type, scope
+from sensitivity_data import login, psw, username, password, grant_type, scope
+from url_manager import token_url, identity_url
 
 token_data = {
     "login": login,
