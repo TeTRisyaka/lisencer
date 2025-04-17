@@ -1,8 +1,17 @@
 import requests
+import logging
 from datetime import datetime
 from tariff_finder import get_tariff_name
 from sensitivity_data import license_url
 from user_get_info import get_user_data, get_manager_token
+
+# Настройка логирования
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+logger = logging.getLogger(__name__)
 
 now = datetime.now()
 formated_time = datetime.strftime(now, "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -20,4 +29,4 @@ def license_giver(tariff_name, user_url):
         "user": get_user_data(user_url)
     }
     requests.post(license_url, headers=headers, json=data)
-    print(f"Лицензия для {tariff_name} выдана")
+    logger.info(f"Лицензия для {tariff_name} выдана")
