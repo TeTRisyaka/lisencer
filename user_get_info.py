@@ -6,7 +6,8 @@ from datetime import datetime
 logger = logging.getLogger()
 
 from sensitivity_data import login, psw, username, password, grant_type, scope
-from url_manager import token_url, identity_url
+from url_manager import token_url, identity_url, users_url
+
 
 now = datetime.now().date()
 date_previous_month = now.replace(year=now.year - 1)
