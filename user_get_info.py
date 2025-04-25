@@ -1,11 +1,16 @@
 import requests
 import logging
+from datetime import datetime
 
 # Настройка логирования
 logger = logging.getLogger()
 
 from sensitivity_data import login, psw, username, password, grant_type, scope
 from url_manager import token_url, identity_url
+
+now = datetime.now().date()
+date_previous_month = now.replace(year=now.year - 1)
+formated_time = datetime.strftime(date_previous_month, "%Y-%m-%dT%H:%M:%S.%fZ")
 
 token_data = {
     "login": login,
@@ -62,3 +67,17 @@ def get_user_id_by_email(users_url, user_email):
     except:
         logger.error(f'Id пользователя {user_email} не найден')
     return user_id
+
+def get_active_users_rg(users_url):
+    data = {
+        "filters": {
+            "email": [{"value": "@smeta.ru", "matchMode": "endsWith", "operator": "and"}],
+            "lastOnlineDateTime": [{"value": formated_time, "matchMode": "dateAfter", "operator": "and"}]
+        },
+        "rows":100
+    }
+    new_token_response = requests.post(users_url, headers=identity_header, json=data)
+    user_list = new_token_response.json()
+    emails = [user["email"] for user in user_list["items"] if "email" in user]
+    print(emails)
+    return emails
