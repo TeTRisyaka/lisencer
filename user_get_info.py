@@ -80,5 +80,5 @@ def get_active_users_rg(users_url):
     new_token_response = requests.post(users_url, headers=identity_header, json=data)
     user_list = new_token_response.json()
     emails = [user["email"] for user in user_list["items"] if "email" in user]
-    print(emails)
+
     return emails
