@@ -11,9 +11,9 @@ logger = logging.getLogger()
 now = datetime.now().date()
 active_users = True
 
+
 #Создает удобный пул лицензий для конкретного пользователя
 def license_pool_create(user_id):
-
     headers = {
         "authorization": "Bearer " + get_manager_token(),
     }
@@ -58,6 +58,7 @@ def license_pool_create(user_id):
             start += 1
     return license_pool
 
+
 #Смотрим сколько дней осталось до конца лицензии (при возможности)
 def date_checker(elem_date, elem_name, user_url):
     try:
@@ -71,7 +72,7 @@ def date_checker(elem_date, elem_name, user_url):
     try:
         if 0 <= days_until_license_over <= 2:
             logger.info(f'выдаем лицензию для {elem_name} потому что дней до окончания {days_until_license_over}')
-            license_giver(elem_name,user_url)
+            license_giver(elem_name, user_url)
         elif days_until_license_over > 2:
             logger.info(f'Дней до окончания лицензии {elem_name} {days_until_license_over}')
         elif days_until_license_over < 0:
@@ -80,6 +81,7 @@ def date_checker(elem_date, elem_name, user_url):
     except:
         logger.error("Ошибка функции проверки даты")
 
+
 #Основная функция, которая ходит по лиценз пулу и при активном статусе лицензии вызывает
 # проверку даты, либо игнорит лицензию при статусе 0 или 5
 def license_puller(user_url, license_pool):
@@ -87,29 +89,29 @@ def license_puller(user_url, license_pool):
     i = 0
     while i < len(license_pool):
         if license_pool[i][3] == "3":
-            if license_pool[i][2] in ("0","5"):
+            if license_pool[i][2] in ("0", "5"):
                 license_available.insert(i, "Админ")
-            elif license_pool[i][2] in ("1","2") and "Админ" not in license_available:
+            elif license_pool[i][2] in ("1", "2") and "Админ" not in license_available:
                 date_checker(license_pool[i][0], 'Администраторский тариф', user_url)
         elif license_pool[i][1] == "GESN2022":
-            if license_pool[i][2] in ("0","5"):
+            if license_pool[i][2] in ("0", "5"):
                 license_available.insert(i, "ГЭСН")
-            elif license_pool[i][2] in ("1","2") and "ГЭСН" not in license_available:
+            elif license_pool[i][2] in ("1", "2") and "ГЭСН" not in license_available:
                 date_checker(license_pool[i][0], license_pool[i][1], user_url)
         elif license_pool[i][1] == "SN2012":
-            if license_pool[i][2] in ("0","5"):
+            if license_pool[i][2] in ("0", "5"):
                 license_available.insert(i, "СН")
-            elif license_pool[i][2] in ("1","2") and "СН" not in license_available:
+            elif license_pool[i][2] in ("1", "2") and "СН" not in license_available:
                 date_checker(license_pool[i][0], license_pool[i][1], user_url)
         elif license_pool[i][1] == "TSN_MGE":
-            if license_pool[i][2] in ("0","5"):
+            if license_pool[i][2] in ("0", "5"):
                 license_available.insert(i, "ТСН")
-            elif license_pool[i][2] in ("1","2") and "ТСН" not in license_available:
+            elif license_pool[i][2] in ("1", "2") and "ТСН" not in license_available:
                 date_checker(license_pool[i][0], license_pool[i][1], user_url)
         elif license_pool[i][1] == "Программа":
-            if license_pool[i][2] in ("0","5"):
-                    license_available.insert(i, "ПРОГРАММА")
-            elif license_pool[i][2] in ("1","2") and "ПРОГРАММА" not in license_available:
+            if license_pool[i][2] in ("0", "5"):
+                license_available.insert(i, "ПРОГРАММА")
+            elif license_pool[i][2] in ("1", "2") and "ПРОГРАММА" not in license_available:
                 date_checker(license_pool[i][0], license_pool[i][1], user_url)
         i += 1
     if "Админ" in license_available:
@@ -124,6 +126,7 @@ def license_puller(user_url, license_pool):
         if "СН" in license_available:
             logger.info("Лицензия для СН не требуется")
         logger.info(f'Лицензии в статусе "новая" или "ждет оплаты" {license_available}')
+
 
 if active_users:
     logger.info(f'Окружение {environment}')
@@ -140,4 +143,3 @@ else:
         logger.info(f'обработка пользователя {user} id {user_id}')
         license = license_pool_create(user_id)
         license_puller(user_url, license)
-

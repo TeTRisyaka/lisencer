@@ -9,23 +9,27 @@ logger = logging.getLogger()
 tariffs = (
     "GESN2022",
     "Программа",
-    # "TSN_MGE",
-    # "SN2012"
+    "TSN_MGE",
+    "SN2012"
 )
 
-user_email = ""
+user_email = "tetriskamana3@gmail.com"
 
 
-if one_user:
-    logger.info(f'Окружение {environment} '
-                f'обработка пользователя {user_email} id {get_user_id_by_email(users_url, user_email)}')
-    for tariff in tariffs:
-        user_url = f'{users_url}{get_user_id_by_email(users_url, user_email)}'
-        license_giver(tariff, user_url)
-else:
-    for user in get_active_users_rg(users_url):
+def tariff_giver():
+    if one_user:
         logger.info(f'Окружение {environment} '
-                f'обработка пользователя {user} id {get_user_id_by_email(users_url, user)}')
+                    f'обработка пользователя {user_email} id {get_user_id_by_email(users_url, user_email)}')
         for tariff in tariffs:
-            user_url = f'{users_url}{get_user_id_by_email(users_url, user)}'
+            user_url = f'{users_url}{get_user_id_by_email(users_url, user_email)}'
             license_giver(tariff, user_url)
+    else:
+        for user in get_active_users_rg(users_url):
+            logger.info(f'Окружение {environment} '
+                        f'обработка пользователя {user} id {get_user_id_by_email(users_url, user)}')
+            for tariff in tariffs:
+                user_url = f'{users_url}{get_user_id_by_email(users_url, user)}'
+                license_giver(tariff, user_url)
+
+
+tariff_giver()

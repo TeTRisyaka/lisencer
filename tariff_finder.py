@@ -6,10 +6,10 @@ from user_get_info import get_manager_token
 # Настройка логирования
 logger = logging.getLogger()
 
-
 headers = {
     "authorization": "Bearer " + get_manager_token(),
 }
+
 
 #Функция достает данные о необходимых тарифах из общего списка
 def get_tariff_name(tariff_name):
@@ -30,4 +30,3 @@ def get_tariff_name(tariff_name):
     if tariff is None:
         logger.warning(f"Тариф не найден: {tariff_name}")
     return tariff
-

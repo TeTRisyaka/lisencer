@@ -58,6 +58,7 @@ def get_user_data(user_url):
 
 #Функция для получения id пользователя по email
 def get_user_id_by_email(users_url, user_email):
+    user_id = None
     data = {
         "filters": {
             "email": [{"value": user_email, "matchMode": "startsWith", "operator": "and"}]

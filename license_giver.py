@@ -1,6 +1,6 @@
 import requests
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from tariff_finder import get_tariff_name
 from url_manager import license_url
 from user_get_info import get_user_data, get_manager_token
@@ -9,13 +9,15 @@ from user_get_info import get_user_data, get_manager_token
 logger = logging.getLogger()
 
 now = datetime.now()
-formated_time = datetime.strftime(now, "%Y-%m-%dT%H:%M:%S.%fZ")
+curent_time = now - timedelta(hours=3)
+formated_time = datetime.strftime(curent_time, "%Y-%m-%dT%H:%M:%S.%fZ")
 
 headers = {
     "authorization": "Bearer " + get_manager_token(),
 }
 
-#Функция для выдачи тарифа
+
+# Функция для выдачи тарифа
 def license_giver(tariff_name, user_url):
     data = {
         "tariff": get_tariff_name(tariff_name),
