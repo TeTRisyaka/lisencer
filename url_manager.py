@@ -1,4 +1,5 @@
 import logging
+
 # Настройка логирования
 logging.basicConfig(
     level=logging.INFO,
@@ -6,7 +7,6 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 logger = logging.getLogger()
-
 
 # Переменная окружения (staging или preview)
 environment = "стейджинг"
@@ -23,6 +23,7 @@ try:
 except:
     logger.error(f"Некорректное окружение: {environment}")
 
+
 # Формируем URL-адреса для текущего окружения
 def get_urls():
     return {
@@ -33,6 +34,7 @@ def get_urls():
         "users_url": f"{base_url}/identity/internal/users/",
         "tariff_url": f"{base_url}/eo-admin/manager/license-manager/tariff"
     }
+
 
 # Экспортируем URL-адреса
 urls = get_urls()
